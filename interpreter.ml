@@ -1,3 +1,4 @@
+#load "str.cma";;
 (*******************************************************************
     LL(1) parser generator, syntax tree builder for an extended
     calculator language, and (skeleton of an) interpreter for the
@@ -551,48 +552,60 @@ and ast_e =
 and ast_c = (string * ast_e * ast_e);;
 
 let rec ast_ize_P (p:parse_tree) : ast_sl =
-  (* your code should replace the following line *)
-  []
+  (*[]*) 
+  print_endline ("AST_IZE_P");
+  match p with
+  | PT_nt("P",[sl;PT_term "$$"]) -> (ast_ize_SL sl)
+  | _ -> raise (Failure "malformed parse tree in ast_ize_P")
 
 and ast_ize_SL (sl:parse_tree) : ast_sl =
+  print_endline("AST_IZE_SL");
   match sl with
-  | PT_nt ("SL", []) -> []
-  (*
-     your code here ...
-  *)
+  (*| PT_nt ("SL", []) -> []*)
+  | PT_nt("SL", [s;sl]) -> (ast_ize_S s) :: (ast_ize_SL sl)
+  | PT_nt("SL",[]) -> []
   | _ -> raise (Failure "malformed parse tree in ast_ize_SL")
 
 and ast_ize_S (s:parse_tree) : ast_s =
+  print_endline("AST_IZE_S");
   match s with
-  | PT_nt ("S", [PT_id lhs; PT_term ":="; expr])
+(*  | PT_nt ("S", [PT_id lhs; PT_term ":="; expr])
         -> AST_assign (lhs, (ast_ize_expr expr))
-  (*
-     your code here ...
-  *)
+*)
+  | PT_nt("S",[PT_term "read"; PT_id x]) -> AST_read(x)
+(*  | PT_nt("S",[PT_nt(x,[]); PT_nt(":=",[]); e]) -> AST_assign(x,(ast_ize_expr e)) *)
+  | PT_nt("S",[PT_id x;PT_term ":=";e]) -> AST_assign(x,(ast_ize_expr e))
+  | PT_nt("S",[PT_term "write"; e]) -> AST_write((ast_ize_expr e))
+  | PT_nt("S",[PT_term "if"; c; sl;PT_nt("end",[])]) -> AST_if((ast_ize_C c),(ast_ize_SL sl))
+  | PT_nt("S",[PT_term"while"; c; sl;PT_nt("end",[])]) -> AST_while((ast_ize_C c),(ast_ize_SL sl))
   | _ -> raise (Failure "malformed parse tree in ast_ize_S")
 
 and ast_ize_expr (e:parse_tree) : ast_e =
   (* e is an E, T, or F parse tree node *)
   match e with
-  (*
-     your code here ...
-  *)
+  | PT_nt ("E",[t;tt]) -> ast_ize_expr_tail(ast_ize_expr t) tt
+  | PT_nt ("T",[f;ft]) -> ast_ize_expr_tail(ast_ize_expr f) ft
+  (*| PT_nt ("F",[PT_nt(x,[])]) -> (try AST_num(int_of_string x) with
+        | Failure _ -> AST_id(x)) *)
+  | PT_nt ("F",[PT_num x]) -> AST_num(x)
+  | PT_nt ("F",[PT_id x]) -> AST_id(x)
+  (*| PT_nt ("F",[PT_nt("(",[]);e;PT_nt(")",[])]) -> ast_ize_expr e*)
+  | PT_nt ("F",[PT_term "(";e;PT_term ")"]) -> ast_ize_expr e
   | _ -> raise (Failure "malformed parse tree in ast_ize_expr")
 
 and ast_ize_expr_tail (lhs:ast_e) (tail:parse_tree) :ast_e =
   (* lhs in an inherited attribute.
      tail is a TT or FT parse tree node *)
   match tail with
-  (*
-     your code here ...
-  *)
+  | PT_nt ("TT",[PT_nt("ao",[PT_term ao]);t;tt]) -> AST_binop(ao,lhs,(ast_ize_expr_tail (ast_ize_expr t) tt))
+  | PT_nt ("TT",[]) -> lhs
+  | PT_nt ("FT",[PT_nt("mo",[PT_term mo]);f;ft]) -> AST_binop(mo,lhs,(ast_ize_expr_tail (ast_ize_expr f) ft))
+  | PT_nt ("FT",[]) -> lhs
   | _ -> raise (Failure "malformed parse tree in ast_ize_expr_tail")
 
 and ast_ize_C (c:parse_tree) : ast_c =
   match c with
-  (*
-     your code here ...
-  *)
+  | PT_nt ("C",[e1; PT_nt("rn",[PT_nt(rn,[])]);e2]) -> (rn,(ast_ize_expr e1),(ast_ize_expr e2))
   | _ -> raise (Failure "malformed parse tree in ast_ize_C")
 ;;
 
@@ -692,16 +705,16 @@ and interpret_cond ((op:string), (lo:ast_e), (ro:ast_e)) (mem:memory)
 
 let sum_ave_parse_tree = parse ecg_parse_table sum_ave_prog;;
 let sum_ave_syntax_tree = ast_ize_P sum_ave_parse_tree;;
-
+(*
 let primes_parse_tree = parse ecg_parse_table primes_prog;;
 let primes_syntax_tree = ast_ize_P primes_parse_tree;;
 
 let ecg_run prog inp = interpret (ast_ize_P (parse ecg_parse_table prog)) inp;;
-
+*)
 let main () =
   print_string (interpret sum_ave_syntax_tree "4 6");
     (* should print "10 5" *)
-  print_newline ();
+  print_newline ();(*
   print_string (interpret primes_syntax_tree "10");
     (* should print "2 3 5 7 11 13 17 19 23 29" *)
   print_newline ();
@@ -714,7 +727,7 @@ let main () =
   print_string (ecg_run "write foo" "");
     (* should print "foo: symbol not found" *)
   print_newline ();
-  print_string (ecg_run "read a read b" "3");
+  print_string (ecg_run "read a read b" "3");*)
     (* should print "unexpected end of input" *)
   print_newline ();;
 
