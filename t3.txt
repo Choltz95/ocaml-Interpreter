@@ -1,0 +1,358 @@
+team: Chester Holtz and Lee Murphy
+
+output of parse ecg_parse_table p;;
+
+let p = "
+      read a
+      read b
+      read c
+      sum := ((a*b)+(b*c)+(c*a))/3
+      write sum";;
+-----------------
+val primes_parse_tree : parse_tree =
+  PT_nt
+   ("P",
+    [PT_nt
+      ("SL",
+       [PT_nt ("S", [PT_term "read"; PT_id "a"]);
+        PT_nt
+         ("SL",
+          [PT_nt ("S", [PT_term "read"; PT_id "b"]);
+           PT_nt
+            ("SL",
+             [PT_nt ("S", [PT_term "read"; PT_id "c"]);
+              PT_nt
+               ("SL",
+                [PT_nt
+                  ("S",
+                   [PT_id "sum"; PT_term ":=";
+                    PT_nt
+                     ("E",
+                      [PT_nt
+                        ("T",
+                         [PT_nt
+                           ("F",
+                            [PT_term "(";
+                             PT_nt
+                              ("E",
+                               [PT_nt
+                                 ("T",
+                                  [PT_nt
+                                    ("F",
+                                     [PT_term "(";
+                                      PT_nt
+                                       ("E",
+                                        [PT_nt
+                                          ("T",
+                                           [PT_nt ("F", [PT_id "a"]);
+                                            PT_nt
+                                             ("FT",
+                                              [PT_nt ("mo", [PT_term "*"]);
+                                               PT_nt ("F", [PT_id "b"]);
+                                               PT_nt ("FT", [])])]);
+                                         PT_nt ("TT", [])]);
+                                      PT_term ")"]);
+                                   PT_nt ("FT", [])]);
+                                PT_nt
+                                 ("TT",
+                                  [PT_nt ("ao", [PT_term "+"]);
+                                   PT_nt
+                                    ("T",
+                                     [PT_nt
+                                       ("F",
+                                        [PT_term "(";
+                                         PT_nt
+                                          ("E",
+                                           [PT_nt
+                                             ("T",
+                                              [PT_nt ("F", [PT_id "b"]);
+                                               PT_nt
+                                                ("FT",
+                                                 [PT_nt ("mo", [PT_term "*"]);
+                                                  PT_nt ("F", [PT_id "c"]);
+                                                  PT_nt ("FT", [])])]);
+                                            PT_nt ("TT", [])]);
+                                         PT_term ")"]);
+                                      PT_nt ("FT", [])]);
+                                   PT_nt
+                                    ("TT",
+                                     [PT_nt ("ao", [PT_term "+"]);
+                                      PT_nt
+                                       ("T",
+                                        [PT_nt
+                                          ("F",
+                                           [PT_term "(";
+                                            PT_nt
+                                             ("E",
+                                              [PT_nt
+                                                ("T",
+                                                 [PT_nt ("F", [PT_id "c"]);
+                                                  PT_nt
+                                                   ("FT",
+                                                    [PT_nt
+                                                      ("mo", [PT_term "*"]);
+                                                     PT_nt ("F", [PT_id "a"]);
+                                                     PT_nt ("FT", [])])]);
+                                               PT_nt ("TT", [])]);
+                                            PT_term ")"]);
+                                         PT_nt ("FT", [])]);
+                                      PT_nt ("TT", [])])])]);
+                             PT_term ")"]);
+                          PT_nt
+                           ("FT",
+                            [PT_nt ("mo", [PT_term "/"]);
+                             PT_nt ("F", [PT_num "3"]); PT_nt ("FT", [])])]);
+                       PT_nt ("TT", [])])]);
+                 PT_nt
+                  ("SL",
+                   [PT_nt
+                     ("S",
+                      [PT_term "write";
+                       PT_nt ("E", [PT_nt ("T", [...]); ...]); ...]);
+                    ...]);
+                 ...]);
+              ...]);
+           ...]);
+        ...]);
+     ...])
+
+
+let p = "
+      read a b
+      read c
+      sum := ((a*b)+(b*c)+(c*a))/3
+      write sum";;
+-----------------
+val primes_parse_tree : parse_tree =
+  PT_nt
+   ("P",
+    [PT_nt
+      ("SL",
+       [PT_nt ("S", [PT_term "read"; PT_id "n"]);
+        PT_nt
+         ("SL",
+          [PT_nt
+            ("S",
+             [PT_id "cp"; PT_term ":=";
+              PT_nt
+               ("E",
+                [PT_nt ("T", [PT_nt ("F", [PT_num "2"]); PT_nt ("FT", [])]);
+                 PT_nt ("TT", [])])]);
+           PT_nt
+            ("SL",
+             [PT_nt
+               ("S",
+                [PT_term "while";
+                 PT_nt
+                  ("C",
+                   [PT_nt
+                     ("E",
+                      [PT_nt
+                        ("T", [PT_nt ("F", [PT_id "n"]); PT_nt ("FT", [])]);
+                       PT_nt ("TT", [])]);
+                    PT_nt ("rn", [PT_term ">"]);
+                    PT_nt
+                     ("E",
+                      [PT_nt
+                        ("T", [PT_nt ("F", [PT_num "0"]); PT_nt ("FT", [])]);
+                       PT_nt ("TT", [])])]);
+                 PT_nt
+                  ("SL",
+                   [PT_nt
+                     ("S",
+                      [PT_id "found"; PT_term ":=";
+                       PT_nt
+                        ("E",
+                         [PT_nt
+                           ("T",
+                            [PT_nt ("F", [PT_num "0"]); PT_nt ("FT", [])]);
+                          PT_nt ("TT", [])])]);
+                    PT_nt
+                     ("SL",
+                      [PT_nt
+                        ("S",
+                         [PT_id "cf1"; PT_term ":=";
+                          PT_nt
+                           ("E",
+                            [PT_nt
+                              ("T",
+                               [PT_nt ("F", [PT_num "2"]); PT_nt ("FT", [])]);
+                             PT_nt ("TT", [])])]);
+                       PT_nt
+                        ("SL",
+                         [PT_nt
+                           ("S",
+                            [PT_id "cf1s"; PT_term ":=";
+                             PT_nt
+                              ("E",
+                               [PT_nt
+                                 ("T",
+                                  [PT_nt ("F", [PT_id "cf1"]);
+                                   PT_nt
+                                    ("FT",
+                                     [PT_nt ("mo", [PT_term "*"]);
+                                      PT_nt ("F", [PT_id "cf1"]);
+                                      PT_nt ("FT", [])])]);
+                                PT_nt ("TT", [])])]);
+                          PT_nt
+                           ("SL",
+                            [PT_nt
+                              ("S",
+                               [PT_term "while";
+                                PT_nt
+                                 ("C",
+                                  [PT_nt
+                                    ("E",
+                                     [PT_nt
+                                       ("T",
+                                        [PT_nt ("F", [PT_id "cf1s"]);
+                                         PT_nt ("FT", [])]);
+                                      PT_nt ("TT", [])]);
+                                   PT_nt ("rn", [PT_term "<="]);
+                                   PT_nt
+                                    ("E",
+                                     [PT_nt
+                                       ("T",
+                                        [PT_nt ("F", [PT_id "cp"]);
+                                         PT_nt ("FT", [])]);
+                                      PT_nt ("TT", [])])]);
+                                PT_nt ("SL", [...]); ...]);
+                             ...]);
+                          ...]);
+                       ...]);
+                    ...]);
+                 ...]);
+              ...]);
+           ...]);
+        ...]);
+     ...])
+
+
+calculator program to take n numbers and print average:
+let average_prog = "
+    read n
+    sum := 0
+    while n > 0
+        read nn
+        sum := sum + nn
+        n := n - 1
+    end
+    avg := sum / n 
+    write avg
+    ";;
+
+val avg_parse_tree : parse_tree =
+  PT_nt
+   ("P",
+    [PT_nt
+      ("SL",
+       [PT_nt ("S", [PT_term "read"; PT_id "n"]);
+        PT_nt
+         ("SL",
+          [PT_nt
+            ("S",
+             [PT_id "sum"; PT_term ":=";
+              PT_nt
+               ("E",
+                [PT_nt ("T", [PT_nt ("F", [PT_num "0"]); PT_nt ("FT", [])]);
+                 PT_nt ("TT", [])])]);
+           PT_nt
+            ("SL",
+             [PT_nt
+               ("S",
+                [PT_term "while";
+                 PT_nt
+                  ("C",
+                   [PT_nt
+                     ("E",
+                      [PT_nt
+                        ("T", [PT_nt ("F", [PT_id "n"]); PT_nt ("FT", [])]);
+                       PT_nt ("TT", [])]);
+                    PT_nt ("rn", [PT_term ">"]);
+                    PT_nt
+                     ("E",
+                      [PT_nt
+                        ("T", [PT_nt ("F", [PT_num "0"]); PT_nt ("FT", [])]);
+                       PT_nt ("TT", [])])]);
+                 PT_nt
+                  ("SL",
+                   [PT_nt ("S", [PT_term "read"; PT_id "nn"]);
+                    PT_nt
+                     ("SL",
+                      [PT_nt
+                        ("S",
+                         [PT_id "sum"; PT_term ":=";
+                          PT_nt
+                           ("E",
+                            [PT_nt
+                              ("T",
+                               [PT_nt ("F", [PT_id "sum"]); PT_nt ("FT", [])]);
+                             PT_nt
+                              ("TT",
+                               [PT_nt ("ao", [PT_term "+"]);
+                                PT_nt
+ + t3.txt                                                                                                                                                                                                                  
+                                 ("T",
+                                  [PT_nt ("F", [PT_id "nn"]);
+                                   PT_nt ("FT", [])]);
+                                PT_nt ("TT", [])])])]);
+                       PT_nt
+                        ("SL",
+                         [PT_nt
+                           ("S",
+                            [PT_id "n"; PT_term ":=";
+                             PT_nt
+                              ("E",
+                               [PT_nt
+                                 ("T",
+                                  [PT_nt ("F", [PT_id "n"]);
+                                   PT_nt ("FT", [])]);
+                                PT_nt
+                                 ("TT",
+                                  [PT_nt ("ao", [PT_term "-"]);
+                                   PT_nt
+                                    ("T",
+                                     [PT_nt ("F", [PT_num "1"]);
+                                      PT_nt ("FT", [])]);
+                                   PT_nt ("TT", [])])])]);
+                          PT_nt ("SL", [])])])]);
+                 PT_term "end"]);
+              PT_nt
+               ("SL",
+                [PT_nt
+                  ("S",
+                   [PT_id "avg"; PT_term ":=";
+                    PT_nt
+                     ("E",
+                      [PT_nt
+                        ("T",
+                         [PT_nt ("F", [PT_id "sum"]);
+                          PT_nt
+                           ("FT",
+                            [PT_nt ("mo", [PT_term "/"]);
+                             PT_nt ("F", [PT_id "n"]); PT_nt ("FT", [])])]);
+                       PT_nt ("TT", [])])]);
+                 PT_nt (...); ...]);
+              ...]);
+           ...]);
+        ...]);
+     ...])
+
+Ocaml to compute binomial coefficient: two recursive solutions and one straight computation
+let rec binom_rec1 n k = 
+    if n = k then 1 
+    else if k = 0 then 1
+    else ((binom_rec1 (n-1) k) * n) / (n-k)
+------------------------------------------------------
+let rec binom_rec2 n k =
+    if n = k then 1
+    else if k = 0 then 1
+    else ((binom_rec2 (n-1) (k-1)) + (binom_rec2 (n-1) k))
+------------------------------------------------------
+let rec fact a =
+    if a <=1 then 1
+    else a * fact(a-1)
+let rec binom n k=
+    if n = k then 1
+    else if k = 0 then 1
+    else ((fact n) / ((fact k) * (fact (n-k))))
