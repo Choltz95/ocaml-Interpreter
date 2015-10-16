@@ -4,9 +4,6 @@
     calculator language, and (skeleton of an) interpreter for the
     generated syntax trees.  
 
-    For CSC 2/454, Fall 2015
-    Michael L. Scott
-
     If compiled and run, will execute "main()".
     Alternatively, can be "#use"-ed (or compiled and then "#load"-ed)
     into the top-level interpreter,
@@ -576,8 +573,8 @@ and ast_ize_S (s:parse_tree) : ast_s =
 (*  | PT_nt("S",[PT_nt(x,[]); PT_nt(":=",[]); e]) -> AST_assign(x,(ast_ize_expr e)) *)
   | PT_nt("S",[PT_id x;PT_term ":=";e]) -> AST_assign(x,(ast_ize_expr e))
   | PT_nt("S",[PT_term "write"; e]) -> AST_write((ast_ize_expr e))
-  | PT_nt("S",[PT_term "if"; c; sl;PT_nt("end",[])]) -> AST_if((ast_ize_C c),(ast_ize_SL sl))
-  | PT_nt("S",[PT_term"while"; c; sl;PT_nt("end",[])]) -> AST_while((ast_ize_C c),(ast_ize_SL sl))
+  | PT_nt("S",[PT_term "if"; c; sl;PT_term "end"]) -> AST_if((ast_ize_C c),(ast_ize_SL sl))
+  | PT_nt("S",[PT_term "while"; c; sl;PT_term "end"]) -> AST_while((ast_ize_C c),(ast_ize_SL sl))
   | _ -> raise (Failure "malformed parse tree in ast_ize_S")
 
 and ast_ize_expr (e:parse_tree) : ast_e =
@@ -605,7 +602,7 @@ and ast_ize_expr_tail (lhs:ast_e) (tail:parse_tree) :ast_e =
 
 and ast_ize_C (c:parse_tree) : ast_c =
   match c with
-  | PT_nt ("C",[e1; PT_nt("rn",[PT_nt(rn,[])]);e2]) -> (rn,(ast_ize_expr e1),(ast_ize_expr e2))
+  | PT_nt ("C",[e1; PT_nt("rn",[PT_term rn]);e2]) -> (rn,(ast_ize_expr e1),(ast_ize_expr e2))
   | _ -> raise (Failure "malformed parse tree in ast_ize_C")
 ;;
 
@@ -622,6 +619,21 @@ type value =    (* an integer or an error message *)
 | Value of int
 | Error of string;;
 
+(* https://stackoverflow.com/questions/4473163/match-one-item-in-list-of-tuples  *)
+let rec lookup string_name tuples_list =
+           match tuples_list with 
+           | [] -> raise Not_found
+           | (s, i)::tl -> if s = string_name then (s, i) 
+                        else lookup string_name tl
+(* string * value *)
+let lookup_var (n : string) (mem : memory)  =
+      match lookup n mem with
+      | (_,a) -> a 
+      | _ -> raise (Failure "no found");;
+
+(* append a tuple to memory *)
+let append l i = l @ [i]
+
 (* concatenate strings, with a space in between if both were nonempty *)
 let str_cat a b =
   match (a, b) with
@@ -635,6 +647,7 @@ let str_cat a b =
    for valid integer format.
 *)
 let rec interpret (ast:ast_sl) (full_input:string) : string =
+  print_endline("INTERPRET");
   let inp = split (regexp "[ \t\n]+") full_input in
   let (_, _, _, outp) = interpret_sl ast [] inp [] in
     (fold_left str_cat "" outp) ^ "\n"
@@ -644,7 +657,12 @@ and interpret_sl (sl:ast_sl) (mem:memory)
     : bool * memory * string list * string list =
     (* ok?   new_mem       new_input     new_output *)
   (* your code should replace the following line *)
-  (true, mem, inp, outp)
+  (*(true, mem, inp, outp)*)
+  print_endline("INTERPRET_SL");
+  
+  match sl with
+  | [] -> (true, mem, inp, outp)
+  | stmt :: rest -> interpret_s stmt mem inp outp
 
 (* NB: the following routine is complete.  You can call it on any
    statement node and it figures out what more specific case to invoke.
@@ -664,13 +682,20 @@ and interpret_assign (lhs:string) (rhs:ast_e) (mem:memory)
                      (inp:string list) (outp:string list)
     : bool * memory * string list * string list =
   (* your code should replace the following line *)
-  (true, mem, inp, outp)
+    (true, mem, inp, outp) 
+    (* append mem (lhs * (interpret_expr rhs)) *)
+        (* append a tuple containing an id and value to memory list *)    
 
 and interpret_read (id:string) (mem:memory)
                    (inp:string list) (outp:string list)
     : bool * memory * string list * string list =
   (* your code should replace the following line *)
-  (true, mem, inp, outp)
+   (true, mem, inp, outp) 
+  (*match inp with (* THIS NEEDS WORK, WRITE UPDATEMEM FUNCTION *)
+  | line :: rest -> let newMem = updateMem id mem (int_of_string line) in
+          Result({values=newMem.values; input=rest; output=outp})
+          (*mem@[(id * (int_of_string inp))]*) 
+  | [] -> raise (Failure "missing arguments")*)
 
 and interpret_write (expr:ast_e) (mem:memory)
                     (inp:string list) (outp:string list)
@@ -689,11 +714,18 @@ and interpret_while (cond:ast_c) (sl:ast_sl) (mem:memory)
     : bool * memory * string list * string list =
   (* your code should replace the following line *)
   (true, mem, inp, outp)
-
+(* ditched value *)
 and interpret_expr (expr:ast_e) (mem:memory) : value * memory =
   (* your code should replace the following line *)
-  (Error("code not written yet"), mem)
-
+   (Error("code not written yet"), mem)  
+(*  match expr with
+  | AST_num v -> (int_of_string v, mem)  
+  (*| AST_id id -> ((lookup_var id), mem)*) (* lookup id *) 
+  | AST_binop (op, exp1, exp2) -> 
+    (match op with
+    | "+" -> ((interpret_expr exp1 mem) + (interpret_expr exp2 mem),mem)
+    | _ -> raise (Faliure "unkown operator"))
+*)
 and interpret_cond ((op:string), (lo:ast_e), (ro:ast_e)) (mem:memory)
     : value * memory =
   (* your code should replace the following line *)
@@ -705,15 +737,19 @@ and interpret_cond ((op:string), (lo:ast_e), (ro:ast_e)) (mem:memory)
 
 let sum_ave_parse_tree = parse ecg_parse_table sum_ave_prog;;
 let sum_ave_syntax_tree = ast_ize_P sum_ave_parse_tree;;
+print_endline (interpret sum_ave_syntax_tree "4 6");;
+
 (*
 let primes_parse_tree = parse ecg_parse_table primes_prog;;
 let primes_syntax_tree = ast_ize_P primes_parse_tree;;
 
+*)
+(*
 let ecg_run prog inp = interpret (ast_ize_P (parse ecg_parse_table prog)) inp;;
 *)
 let main () =
-  print_string (interpret sum_ave_syntax_tree "4 6");
-    (* should print "10 5" *)
+(*  print_string (interpret sum_ave_syntax_tree "4 6");
+*)    (* should print "10 5" *)
   print_newline ();(*
   print_string (interpret primes_syntax_tree "10");
     (* should print "2 3 5 7 11 13 17 19 23 29" *)

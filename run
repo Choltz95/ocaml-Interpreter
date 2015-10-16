@@ -1,0 +1,12 @@
+#!/bin/sh
+make
+echo "--------"
+if [ $# -gt 1 ]
+then
+    if [ "$1" = "--debug"  -o "$1" = "-d" ]
+    then
+        ./parse -d <$2
+    fi
+else
+    ./parse <$1
+fi
